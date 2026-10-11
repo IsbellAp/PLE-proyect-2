@@ -1,6 +1,6 @@
 module Syntax
 
-// ===== Espacios y comentarios =====
+// ===== Espacios y comentarios ===== (No entiendo casi esto, pero ok)
 layout Layout = EspacioOComentario* !>> [\ \t\n\r] !>> "//";
 
 lexical EspacioOComentario
@@ -22,6 +22,7 @@ keyword Reservada
   | "and" | "or" | "neg"
   ;
 
+//Inicio del programa
 
 start syntax Programa = programa : Definicion* Metodo;
 
@@ -82,7 +83,41 @@ syntax Expresion
   ;
 
 
-syntax Primario = temporalId: Id | temporalNum: Entero;
+//Aquí ya definimos como lo ultimo que es primero, las instancias y los literales
+
+
+syntax Primario = primario: ElementoBase Sufijo*;
+
+//Igual que con tipo:D
+syntax ElementoBase
+  = variable: Id
+  | llamada: Id Argumentos
+  | literal: Literal
+  | instancia: NuevaInstancia
+  | tupla: Tupla
+  | agrupacion: "(" Expresion ")"
+  ;
+
+syntax Sufijo = acceso: "." Id | llamadaMetodo: "." Id Argumentos;
+
+syntax Argumentos = argumentos: "(" {Expresion ","}* ")";
+
+syntax Tupla = tuplaExp: "(" Expresion "," {Expresion ","}+ ")";
+
+syntax NuevaInstancia = nueva: "new" Tipo Argumentos? CuerpoInstancia?;
+
+syntax CuerpoInstancia = cuerpo: "{" OverrideMetodo+ "}";
+
+syntax OverrideMetodo = sobrescribir: "override" Id "(" Parametros ")" ":" Tipo "=" Bloque;
+
+syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano;
+
+syntax LiteralBooleano = verdadero: "true" | falso: "false";
+
+
+
+
+//Definciones basicas (hice primero esto)
 
 syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? Herencia?;
 

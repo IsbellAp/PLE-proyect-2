@@ -1,0 +1,15 @@
+object Cat extends Animal
+Cat.talk = method(): Integer { 1 }
+
+method main {
+  print(x, 2);
+  val c = new Cat;
+  val d = new List[Integer](1, 2, 3);
+  val e = new Animal { override talk(): Integer = { 5 } };
+  c.talk();
+  c.nombre;
+  val t = (1, 2, true);
+  val g = (a + b) * c;
+  val h = c.talk().veces(3) + 1;
+  val b = true and false
+}
