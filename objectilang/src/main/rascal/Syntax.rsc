@@ -30,4 +30,17 @@ syntax DefinicionGenerico = generico: "[" ("+" | "-")? Id ("," ("+"|"-")? Id)* "
 
 syntax ConstructorParametros = constructor:"(" ParametroConstructor ("," ParametroConstructor)* ")";
 
-syntax ParametroConstructor = parametro: "val" Id ":" Id;
+syntax ParametroConstructor = parametro: "val" Id ":" Tipo;
+
+//No funcionó Tipo tradujendolo como se tradujo originalmente, entonces toco poner esta funcion de rascal
+
+syntax Tipo
+  = tipoString: "String"
+  | tipoInteger: "Integer"
+  | tipoBoolean: "Boolean"
+  | tipoNombre: Id nombre
+  | tipoGenerico: Id nombre "[" {Tipo ","}+ argumentos "]";
+
+
+syntax Parametros = parametros: (Id ":" Tipo ("," Id ":" Tipo )*)?;
+
