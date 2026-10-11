@@ -61,9 +61,28 @@ syntax CicloFor = ciclo: "for" "(" VariableIteracion "\<-" Expresion ")" Sentenc
 
 syntax VariableIteracion = varSimple: Id | varTupla: "(" Id "," {Id ","}+ ")";
 
-//TEMPORAL
-syntax Expresion = temporalId: Id | temporalNum: Entero;
+//Para la expresion lo que hacemos es esta vez usar una funcion de rascal que nos permite poner "prioridad"
+//Esta preioridad si va como de lo mas basico a lo mas completo, por lo que esta vez empezamos desde primario, hasta el que era el tope en nuestro original. 
 
+
+//Hecha con ayuda de IA pq fue la mas complicada y no la entendpi casi. 
+syntax Expresion
+  = base: Primario
+  > negacion: "neg" Expresion | negativo: "-" Expresion
+  > right potencia: Expresion "**" Expresion
+  > left ( mult: Expresion "*" Expresion | div: Expresion "/" Expresion | modulo: Expresion "%" Expresion )
+  > left ( suma: Expresion "+" Expresion | resta: Expresion "-" Expresion )
+  > non-assoc ( menor: Expresion "\<" Expresion | mayor: Expresion "\>" Expresion
+              | menorIgual: Expresion "\<=" Expresion | mayorIgual: Expresion "\>=" Expresion
+              | distinto: Expresion "\<\>" Expresion | igual: Expresion "=" Expresion
+              | pertenece: Expresion "in" Expresion )
+  > left conjuncion: Expresion "and" Expresion
+  > left disyuncion: Expresion "or" Expresion
+  > left ( flecha: Expresion "-\>" Expresion | flechaDoble: Expresion "=\>" Expresion )
+  ;
+
+
+syntax Primario = temporalId: Id | temporalNum: Entero;
 
 syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? Herencia?;
 
