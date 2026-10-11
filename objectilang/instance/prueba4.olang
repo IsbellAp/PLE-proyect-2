@@ -1,0 +1,9 @@
+method main {
+  print("Hola mundo");
+  print("Hola, $nombre!");
+  print("Tienes ${edad + 1} años");
+  print("¿Cómo estás? 100% bien");
+  print("Precio: \$5 y una comilla \" adentro");
+  val vacio = "";
+  print("Anidado: ${ saludar("Ana") }")
+}

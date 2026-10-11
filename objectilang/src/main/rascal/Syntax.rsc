@@ -110,7 +110,7 @@ syntax CuerpoInstancia = cuerpo: "{" OverrideMetodo+ "}";
 
 syntax OverrideMetodo = sobrescribir: "override" Id "(" Parametros ")" ":" Tipo "=" Bloque;
 
-syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano;
+syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano | litString: LiteralString ;
 
 syntax LiteralBooleano = verdadero: "true" | falso: "false";
 
@@ -146,5 +146,24 @@ syntax Tipo
 syntax Parametros = parametros: {Parametro ","}*;
 
 syntax Parametro = parametroMetodo: Id ":" Tipo;
+
+
+
+//Esta es la ultima parte, que es complicada, porque la idea es que no se pierdan los espacios entre strings
+//Como no entendi bien como hacerla, tampoco entendí muy bien como quedó
+// Ni porque funciona xd
+
+lexical LiteralString = cadena: "\"" ParteString* "\""; 
+// Si se que el lexical es para cuidar los espacios
+
+syntax ParteString
+  = texto: TextoString
+  | interpVariable: "$" Id
+  | interpExpresion: "${" Expresion "}";
+
+lexical TextoString = CaracterString+ !>> ![\"$\\\n] !>> [\\];
+
+lexical CaracterString = ![\"$\\\n] | "\\" [\"$\\n];
+
 
 
