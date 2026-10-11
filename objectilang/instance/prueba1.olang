@@ -1,0 +1,12 @@
+   object Animal
+   object Dog extends Animal
+   Dog.talk = method(): String { x }
+
+   method main {
+     val x: Integer = y;
+     var z = 5;
+     if a then b else c;
+     if a then if b then c else d;
+     for (i <- lista) { i };
+     for ((k, v) <- mapa) k
+   }

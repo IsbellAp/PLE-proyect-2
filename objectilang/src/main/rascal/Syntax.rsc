@@ -23,12 +23,59 @@ keyword Reservada
   ;
 
 
-start syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? ("extends" Id)?;
+start syntax Programa = programa : Definicion* Metodo;
+
+syntax Definicion = defObjeto: DefinicionObjeto | defMetodo: DefinicionObjetoMetodo;
+
+syntax Metodo = metodoMain: "method" "main" Bloque;
+
+syntax DefinicionObjetoMetodo = metodo: Id "." Id "=" "method" "(" Parametros ")" ":" Tipo Bloque;
 
 
-syntax DefinicionGenerico = generico: "[" ("+" | "-")? Id ("," ("+"|"-")? Id)* "]";
+//Bloque cambió con respecto al original de la primera entrega, ya que así, omitimos ambiguedad.
+syntax Bloque = bloque: "{" {Sentencia ";"}* "}";
 
-syntax ConstructorParametros = constructor:"(" ParametroConstructor ("," ParametroConstructor)* ")";
+//Sentencia cambió al igual que Tipo, ya que pues al escribirlo en rascal lo aceptaba mejor de esta manera
+
+syntax Sentencia
+  = sentDeclaracion: DeclaracionVariable
+  | sentExpresion: Expresion
+  | sentBloque: Bloque
+  | sentIf: CondicionalIf
+  | sentFor: CicloFor;
+
+// A partir de acá somos un poco más especificos, ya que si dejabamos la traduccion original el AST no reconocía por completo la traduccion. 
+
+syntax DeclaracionVariable = declaracion: Modificador Id AnotacionTipo? "=" Expresion;
+
+syntax Modificador = inmutable: "val" | mutable: "var";
+
+syntax AnotacionTipo = anotacion: ":" Tipo;
+
+syntax CondicionalIf
+  = ifSinElse: "if" Expresion "then" Sentencia () !>> "else"
+  | ifConElse: "if" Expresion "then" Sentencia "else" Sentencia
+  ;
+
+syntax CicloFor = ciclo: "for" "(" VariableIteracion "\<-" Expresion ")" Sentencia;
+
+syntax VariableIteracion = varSimple: Id | varTupla: "(" Id "," {Id ","}+ ")";
+
+//TEMPORAL
+syntax Expresion = temporalId: Id | temporalNum: Entero;
+
+
+syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? Herencia?;
+
+syntax Herencia = herencia: "extends" Id;
+
+syntax DefinicionGenerico = generico: "[" {ParametroGenerico ","}+ "]";
+
+syntax ParametroGenerico = parametroGenerico: Varianza? Id;
+
+syntax Varianza = covariante: "+" | contravariante: "-";
+
+syntax ConstructorParametros = constructor: "(" {ParametroConstructor ","}+ ")";
 
 syntax ParametroConstructor = parametro: "val" Id ":" Tipo;
 
@@ -42,5 +89,8 @@ syntax Tipo
   | tipoGenerico: Id nombre "[" {Tipo ","}+ argumentos "]";
 
 
-syntax Parametros = parametros: (Id ":" Tipo ("," Id ":" Tipo )*)?;
+syntax Parametros = parametros: {Parametro ","}*;
+
+syntax Parametro = parametroMetodo: Id ":" Tipo;
+
 
