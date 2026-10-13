@@ -28,37 +28,30 @@ start syntax Programa = programa : Definicion* Metodo;
 
 syntax Definicion = defObjeto: DefinicionObjeto | defMetodo: DefinicionObjetoMetodo;
 
-syntax Metodo = metodoMain: "method" "main" Bloque;
+syntax Metodo = metodoMain: "method" !>> [a-zA-Z0-9] "main" Bloque;
 
-syntax DefinicionObjetoMetodo = metodo: Id "." Id "=" "method" "(" Parametros ")" ":" Tipo Bloque;
+syntax DefinicionObjetoMetodo = metodo: Id "." Id "=" "method" !>> [a-zA-Z0-9] "(" Parametros ")" ":" Tipo Bloque;
 
 
 //Bloque cambió con respecto al original de la primera entrega, ya que así, omitimos ambiguedad.
-syntax Bloque = bloque: "{" {Sentencia ";"}* "}";
+syntax Bloque = bloque: "{" (Sentencia () !>> "(" !>> "-")* "}";
 
 //Sentencia cambió al igual que Tipo, ya que pues al escribirlo en rascal lo aceptaba mejor de esta manera
 
 syntax Sentencia
   = sentDeclaracion: DeclaracionVariable
   | sentExpresion: Expresion
-  | sentBloque: Bloque
-  | sentIf: CondicionalIf
-  | sentFor: CicloFor;
+  ;
 
 // A partir de acá somos un poco más especificos, ya que si dejabamos la traduccion original el AST no reconocía por completo la traduccion. 
 
 syntax DeclaracionVariable = declaracion: Modificador Id AnotacionTipo? "=" Expresion;
 
-syntax Modificador = inmutable: "val" | mutable: "var";
+syntax Modificador = inmutable: "val" !>> [a-zA-Z0-9] | mutable: "var" !>> [a-zA-Z0-9];
 
 syntax AnotacionTipo = anotacion: ":" Tipo;
 
-syntax CondicionalIf
-  = ifSinElse: "if" Expresion "then" Sentencia () !>> "else"
-  | ifConElse: "if" Expresion "then" Sentencia "else" Sentencia
-  ;
 
-syntax CicloFor = ciclo: "for" "(" VariableIteracion "\<-" Expresion ")" Sentencia;
 
 syntax VariableIteracion = varSimple: Id | varTupla: "(" Id "," {Id ","}+ ")";
 
@@ -69,7 +62,8 @@ syntax VariableIteracion = varSimple: Id | varTupla: "(" Id "," {Id ","}+ ")";
 //Hecha con ayuda de IA pq fue la mas complicada y no la entendpi casi. 
 syntax Expresion
   = base: Primario
-  > negacion: "neg" Expresion | negativo: "-" Expresion
+  | bloqueExp: Bloque
+  > negacion: "neg" !>> [a-zA-Z0-9] Expresion | negativo: "-" Expresion
   > right potencia: Expresion "**" Expresion
   > left ( mult: Expresion "*" Expresion | div: Expresion "/" Expresion | modulo: Expresion "%" Expresion )
   > left ( suma: Expresion "+" Expresion | resta: Expresion "-" Expresion )
@@ -80,6 +74,9 @@ syntax Expresion
   > left conjuncion: Expresion "and" Expresion
   > left disyuncion: Expresion "or" Expresion
   > left ( flecha: Expresion "-\>" Expresion | flechaDoble: Expresion "=\>" Expresion )
+  > ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion
+  > ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion!ifSinElse "else" Expresion
+  > ciclo: "for" !>> [a-zA-Z0-9] "(" VariableIteracion "\<-" Expresion ")" Expresion
   ;
 
 
@@ -104,24 +101,24 @@ syntax Argumentos = argumentos: "(" {Expresion ","}* ")";
 
 syntax Tupla = tuplaExp: "(" Expresion "," {Expresion ","}+ ")";
 
-syntax NuevaInstancia = nueva: "new" Tipo Argumentos? CuerpoInstancia?;
+syntax NuevaInstancia = nueva: "new" !>> [a-zA-Z0-9] Tipo Argumentos? CuerpoInstancia?;
 
 syntax CuerpoInstancia = cuerpo: "{" OverrideMetodo+ "}";
 
-syntax OverrideMetodo = sobrescribir: "override" Id "(" Parametros ")" ":" Tipo "=" Bloque;
+syntax OverrideMetodo = sobrescribir: "override" !>> [a-zA-Z0-9] Id "(" Parametros ")" ":" Tipo "=" Bloque;
 
 syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano | litString: LiteralString ;
 
-syntax LiteralBooleano = verdadero: "true" | falso: "false";
+syntax LiteralBooleano = verdadero: "true" !>> [a-zA-Z0-9] | falso: "false" !>> [a-zA-Z0-9];
 
 
 
 
 //Definciones basicas (hice primero esto)
 
-syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? Herencia?;
+syntax DefinicionObjeto = objeto: "object" !>> [a-zA-Z0-9] Id DefinicionGenerico? ConstructorParametros? Herencia?;
 
-syntax Herencia = herencia: "extends" Id;
+syntax Herencia = herencia: "extends" !>> [a-zA-Z0-9] Id;
 
 syntax DefinicionGenerico = generico: "[" {ParametroGenerico ","}+ "]";
 
@@ -131,14 +128,14 @@ syntax Varianza = covariante: "+" | contravariante: "-";
 
 syntax ConstructorParametros = constructor: "(" {ParametroConstructor ","}+ ")";
 
-syntax ParametroConstructor = parametro: "val" Id ":" Tipo;
+syntax ParametroConstructor = parametro: "val" !>> [a-zA-Z0-9] Id ":" Tipo;
 
 //No funcionó Tipo tradujendolo como se tradujo originalmente, entonces toco poner esta funcion de rascal
 
 syntax Tipo
-  = tipoString: "String"
-  | tipoInteger: "Integer"
-  | tipoBoolean: "Boolean"
+  = tipoString: "String" !>> [a-zA-Z0-9]
+  | tipoInteger: "Integer" !>> [a-zA-Z0-9]
+  | tipoBoolean: "Boolean" !>> [a-zA-Z0-9]
   | tipoNombre: Id nombre
   | tipoGenerico: Id nombre "[" {Tipo ","}+ argumentos "]";
 
@@ -153,17 +150,13 @@ syntax Parametro = parametroMetodo: Id ":" Tipo;
 //Como no entendi bien como hacerla, tampoco entendí muy bien como quedó
 // Ni porque funciona xd
 
-lexical LiteralString = cadena: "\"" ParteString* "\""; 
-// Si se que el lexical es para cuidar los espacios
+lexical LiteralString = cadena: "\"" ParteString* "\"";
 
-syntax ParteString
+lexical ParteString
   = texto: TextoString
   | interpVariable: "$" Id
-  | interpExpresion: "${" Expresion "}";
+  | interpExpresion: "${" Layout Expresion Layout "}";
 
 lexical TextoString = CaracterString+ !>> ![\"$\\\n] !>> [\\];
 
 lexical CaracterString = ![\"$\\\n] | "\\" [\"$\\n];
-
-
-
