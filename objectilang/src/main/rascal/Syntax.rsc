@@ -9,14 +9,14 @@ lexical EspacioOComentario
   ;
 
 
-lexical Id = ([a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9]) \ Reservada;
+lexical Id = @category="variable" ([a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9]) \ Reservada;
 
 
-lexical Entero = [0-9]+ !>> [0-9];
+lexical Entero = @category="number" [0-9]+ !>> [0-9];
 
 
 keyword Reservada
-  = "object" | "extends" | "method" | "val" | "var" | "new"
+  = @category="keyword" "object" | @category="keyword" "extends" | @category="keyword" "method" | @category="keyword" "val" | @category="keyword" "var" | @category="keyword" "new"
   | "override" | "if" | "then" | "else" | "for" | "in"
   | "String" | "Integer" | "Boolean" | "true" | "false"
   | "and" | "or" | "neg"
@@ -28,9 +28,9 @@ start syntax Programa = programa : Definicion* Metodo;
 
 syntax Definicion = defObjeto: DefinicionObjeto | defMetodo: DefinicionObjetoMetodo;
 
-syntax Metodo = metodoMain: "method" !>> [a-zA-Z0-9] "main" Bloque;
+syntax Metodo = @category="method" metodoMain: "method" !>> [a-zA-Z0-9] "main" Bloque;
 
-syntax DefinicionObjetoMetodo = metodo: Id "." Id "=" "method" !>> [a-zA-Z0-9] "(" Parametros ")" ":" Tipo Bloque;
+syntax DefinicionObjetoMetodo = @category="method" metodo: Id "." Id "=" "method" !>> [a-zA-Z0-9] "(" Parametros ")" ":" Tipo Bloque;
 
 
 //Bloque cambió con respecto al original de la primera entrega, ya que así, omitimos ambiguedad.
@@ -121,7 +121,7 @@ syntax LiteralBooleano = verdadero: "true" !>> [a-zA-Z0-9] | falso: "false" !>> 
 
 //Definciones basicas (hice primero esto)
 
-syntax DefinicionObjeto = objeto: "object" !>> [a-zA-Z0-9] Id DefinicionGenerico? ConstructorParametros? Herencia?;
+syntax DefinicionObjeto = @category="class" objeto: "object" !>> [a-zA-Z0-9] Id DefinicionGenerico? ConstructorParametros? Herencia?;
 
 syntax Herencia = herencia: "extends" !>> [a-zA-Z0-9] Id;
 
@@ -154,7 +154,7 @@ syntax Parametro = parametroMetodo: Id ":" Tipo;
 //Esta es la ultima parte, que es complicada, porque la idea es que no se pierdan los espacios entre strings
 
 
-lexical LiteralString = cadena: "\"" ParteString* "\"";
+lexical LiteralString = @category="string" cadena: "\"" ParteString* "\"";
 
 lexical ParteString
   = texto: TextoString

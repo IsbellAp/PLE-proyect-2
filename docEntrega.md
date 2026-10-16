@@ -1,4 +1,4 @@
- Proyecto 2 – Cambios a la gramática de Objectilang respecto al Proyecto 1
+# Proyecto 2 – Cambios a la gramática de Objectilang respecto al Proyecto 1
 
 **Curso:** ISIS-2111 PLE (Elementos Esenciales de Lenguajes de Programación)
 **Integrantes:** Edy Lane Martínez Rojas (202510939) · Isabella Casallas Abril (202510253)
@@ -56,10 +56,10 @@ Como la rama final es una `Sentencia`, que a su vez puede ser una `Expresion`, e
 
 **Corrección.**
 
-- `if` y `for` salen de `ElementoBase` y pasan a ser producciones de `Expresion` con la **prioridad más baja** (se comportan como operadores prefijos que se extienden lo más a la derecha posible).
-- Sus ramas pasan de `Sentencia` a `Expresion`, para que el filtrado por prioridad de Rascal pueda aplicarse.
-- Para que un bloque siga pudiendo ser rama (`if c then { … } else { … }`), `Bloque` se agrega como alternativa de `Expresion` (`bloqueExp`). Se elimina `sentBloque` de `Sentencia` para no duplicar.
-- El *dangling else* se resuelve con una exclusión de producción: la rama `then` de un `ifConElse` no puede ser un `ifSinElse`. Así el `else` se asocia siempre al `if` más cercano.
+- `if` y `for` salen de `ElementoBase`/`Primario` y pasan a ser alternativas de `Expresion`.
+- Los operadores (`+`, `*`, `and`, `->`, etc.) se mueven a un nuevo no terminal `Operacion`, con las mismas prioridades de P1. Los operandos de un operador son `Operacion`, **no** `Expresion`. Por eso un `if`/`for` no puede ser operando directo de un operador, y `if a then b else c + 1` solo puede leerse como `if a then b else (c + 1)`. Para usar un `if`/`for` como operando hay que ponerlo entre paréntesis, porque la agrupación `"(" Expresion ")"` sí admite cualquier `Expresion`.
+- Las ramas del `if` y el cuerpo del `for` pasan de `Sentencia` a `Expresion`. Para que un bloque siga pudiendo ser rama (`if c then { … } else { … }`), `Bloque` se agrega como alternativa de `Operacion` (`bloqueExp`) y se elimina `sentBloque` de `Sentencia` para no duplicar.
+- El *dangling else* se resuelve con `() !>> "else"` al final de `ifSinElse`: un `if` sin `else` no puede quedar seguido de un `else`, así que el `else` siempre se asocia al `if` más cercano.
 
 ```rascal
 syntax Sentencia
@@ -68,21 +68,28 @@ syntax Sentencia
   ;
 
 syntax Expresion
+  = ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion () !>> "else"
+  | ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion "else" Expresion
+  | ciclo: "for" !>> [a-zA-Z0-9] "(" VariableIteracion "<-" Expresion ")" Expresion
+  | operacion: Operacion
+  ;
+
+syntax Operacion
   = base: Primario
   | bloqueExp: Bloque
-  > ...
-  > left ( flecha: Expresion "->" Expresion | flechaDoble: Expresion "=>" Expresion )
-  > ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion
-  > ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion!ifSinElse "else" Expresion
-  > ciclo: "for" !>> [a-zA-Z0-9] "(" VariableIteracion "<-" Expresion ")" Expresion
+  > negacion: "neg" !>> [a-zA-Z0-9] Operacion | negativo: "-" Operacion
+  > right potencia: Operacion "**" Operacion
+  > ... // mult, suma, comparaciones, and, or, flechas (ver 2.2)
   ;
 ```
 
 **Consecuencias para quien escribe programas:**
 
-- Un `if`/`for` como operando *izquierdo* de un operador necesita paréntesis: `(if a then b else c) + 1`. Sin paréntesis, `if a then b else c + 1` se lee siempre como `if a then b else (c + 1)`. Como operando derecho (`1 + if a then b else c`) sigue siendo válido.
+- Un `if`/`for` usado como operando de un operador necesita paréntesis, tanto a la izquierda como a la derecha: `(if a then b else c) + 1` y `1 + (if a then b else c)`. Sin paréntesis, `if a then b else c + 1` se lee siempre como `if a then b else (c + 1)`, y `1 + if a then b else c` es un error de sintaxis.
 - Una declaración (`val x = …`) no puede ser rama directa de un `if`/`for`; hay que ponerla dentro de un bloque `{ … }`.
-- Desaparecen los no terminales `CondicionalIf` y `CicloFor`. Sus producciones viven directamente en `Expresion` con los constructores `ifSinElse`, `ifConElse` y `ciclo`.
+- Desaparecen los no terminales `CondicionalIf` y `CicloFor`. Sus producciones viven directamente en `Expresion` con los constructores `ifSinElse`, `ifConElse` y `ciclo`. Aparece `Operacion` (y el constructor `operacion` en `Expresion`).
+
+---
 
 ### 1.3 Strings: se perdían los espacios y había ambigüedad con el layout
 
@@ -144,7 +151,7 @@ lexical EspacioOComentario
 
 ### 2.2 Jerarquía de expresiones → prioridades y asociatividad
 
-La cadena de no terminales de P1 (`ExpresionFlecha → ExpresionOr → ExpresionAnd → ExpresionComparacion → ExpresionSuma → ExpresionMult → ExpresionPotencia → ExpresionUnaria → Primario`) se reemplaza por un único no terminal `Expresion` con prioridades (`>`) y asociatividad. **La precedencia y la asociatividad son las mismas que en P1**:
+La cadena de no terminales de P1 (`ExpresionFlecha → ExpresionOr → ExpresionAnd → ExpresionComparacion → ExpresionSuma → ExpresionMult → ExpresionPotencia → ExpresionUnaria → Primario`) se reemplaza por dos no terminales: `Expresion` (que contiene `if`, `for` y `operacion`) y `Operacion`, que concentra todos los operadores con prioridades (`>`) y asociatividad. **La precedencia y la asociatividad son las mismas que en P1**:
 
 | Nivel (mayor a menor) | Operadores | Asociatividad |
 |---|---|---|
@@ -157,9 +164,9 @@ La cadena de no terminales de P1 (`ExpresionFlecha → ExpresionOr → Expresion
 | 7 | `and` | izquierda |
 | 8 | `or` | izquierda |
 | 9 | `->`, `=>` | izquierda |
-| 10 (más bajo) | `if`, `for` (ver 1.2) | – |
+| fuera de `Operacion` | `if`, `for` (son alternativas de `Expresion`, ver 1.2) | – |
 
-Desaparecen `OperadorComparacion` y `Agrupacion` como no terminales. La agrupación es ahora la alternativa `agrupacion: "(" Expresion ")"` de `ElementoBase`. Cada operador tiene su propio constructor (`suma`, `resta`, `mult`, `potencia`, `flecha`, etc.).
+Desaparecen `OperadorComparacion` y `Agrupacion` como no terminales. La agrupación es ahora la alternativa `agrupacion: "(" Expresion ")"` de `ElementoBase`. Cada operador tiene su propio constructor (`suma`, `resta`, `mult`, `potencia`, `flecha`, etc.), todos de `Operacion`.
 
 ### 2.3 Llamadas y sufijos
 
@@ -222,6 +229,7 @@ Lo que **cambió de comportamiento**, resumido:
 |---|---|---|
 | `negative`, `valores`, `newton` como identificadores | ambiguo | válido, es un identificador |
 | `if a then b else c + 1` | ambiguo | siempre `if a then b else (c + 1)`; para el otro sentido, `(if a then b else c) + 1` |
+| `1 + if a then b else c` | permitido (y ambiguo con otras lecturas) | error: usar `1 + (if a then b else c)` |
 | `if c then val x = 1` | permitido | error: usar `if c then { val x = 1 }` |
 | `(f)(x)` | permitido | error |
 | `String[Integer]` como tipo | permitido | error |
@@ -233,7 +241,9 @@ Lo que **cambió de comportamiento**, resumido:
 
 ## 4. Archivos de la entrega
 
-- `Syntax.rsc` – gramática (sintaxis concreta, con resaltado de sintaxis mediante el plugin).
+- `Syntax.rsc` – gramática (sintaxis concreta).
 - `AST.rsc` – sintaxis abstracta (ADT cuyos constructores corresponden a las etiquetas de `Syntax.rsc`).
+- `Parser.rsc` e `Implode.rsc` – funciones auxiliares que parsean un programa y construyen el AST con `implode`. Se incluyen para comprobar que el AST es coherente con la gramática.
 - `Plugin.rsc` – registro del lenguaje en VS Code para el resaltado de sintaxis.
+- `instance/prueba1.olang` … `prueba5.olang` – programas de prueba.
 - Este documento.
