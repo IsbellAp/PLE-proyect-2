@@ -58,32 +58,35 @@ data VariableIteracion
 
 // ===== Expresiones =====
 data Expresion
-  = base(Primario primario)
-  | bloqueExp(Bloque bloque)
-  | negacion(Expresion e)
-  | negativo(Expresion e)
-  | potencia(Expresion izq, Expresion der)
-  | mult(Expresion izq, Expresion der)
-  | div(Expresion izq, Expresion der)
-  | modulo(Expresion izq, Expresion der)
-  | suma(Expresion izq, Expresion der)
-  | resta(Expresion izq, Expresion der)
-  | menor(Expresion izq, Expresion der)
-  | mayor(Expresion izq, Expresion der)
-  | menorIgual(Expresion izq, Expresion der)
-  | mayorIgual(Expresion izq, Expresion der)
-  | distinto(Expresion izq, Expresion der)
-  | igual(Expresion izq, Expresion der)
-  | pertenece(Expresion izq, Expresion der)
-  | conjuncion(Expresion izq, Expresion der)
-  | disyuncion(Expresion izq, Expresion der)
-  | flecha(Expresion izq, Expresion der)
-  | flechaDoble(Expresion izq, Expresion der)
-  | ifSinElse(Expresion condicion, Expresion entonces)
+  = ifSinElse(Expresion condicion, Expresion entonces)
   | ifConElse(Expresion condicion, Expresion entonces, Expresion sino)
   | ciclo(VariableIteracion variable, Expresion coleccion, Expresion cuerpo)
+  | operacion(Operacion operacion)
   ;
 
+data Operacion
+  = base(Primario primario)
+  | bloqueExp(Bloque bloque)
+  | negacion(Operacion e)
+  | negativo(Operacion e)
+  | potencia(Operacion izq, Operacion der)
+  | mult(Operacion izq, Operacion der)
+  | div(Operacion izq, Operacion der)
+  | modulo(Operacion izq, Operacion der)
+  | suma(Operacion izq, Operacion der)
+  | resta(Operacion izq, Operacion der)
+  | menor(Operacion izq, Operacion der)
+  | mayor(Operacion izq, Operacion der)
+  | menorIgual(Operacion izq, Operacion der)
+  | mayorIgual(Operacion izq, Operacion der)
+  | distinto(Operacion izq, Operacion der)
+  | igual(Operacion izq, Operacion der)
+  | pertenece(Operacion izq, Operacion der)
+  | conjuncion(Operacion izq, Operacion der)
+  | disyuncion(Operacion izq, Operacion der)
+  | flecha(Operacion izq, Operacion der)
+  | flechaDoble(Operacion izq, Operacion der)
+  ;
 data Primario = primario(ElementoBase elemento, list[Sufijo] sufijos);
 
 data ElementoBase

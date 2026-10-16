@@ -1,4 +1,3 @@
 Manifest-Version: 0.0.1
 Project-Name: objectilang
 Source: src/main/rascal
-Require-Libraries: |lib://dsl-project|

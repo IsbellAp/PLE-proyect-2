@@ -59,24 +59,30 @@ syntax VariableIteracion = varSimple: Id | varTupla: "(" Id "," {Id ","}+ ")";
 //Esta preioridad si va como de lo mas basico a lo mas completo, por lo que esta vez empezamos desde primario, hasta el que era el tope en nuestro original. 
 
 
-//Hecha con ayuda de IA pq fue la mas complicada y no la entendpi casi. 
+// Nivel 1: if, for y operaciones. Los if/for no pueden ser operandos de un
+// operador sin paréntesis; así se evita la ambigüedad con los operadores.
+// El () !>> "else" hace que el else siempre pertenezca al if más cercano.
 syntax Expresion
+  = ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion () !>> "else"
+  | ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion "else" Expresion
+  | ciclo: "for" !>> [a-zA-Z0-9] "(" VariableIteracion "\<-" Expresion ")" Expresion
+  | operacion: Operacion
+  ;
+
+syntax Operacion
   = base: Primario
   | bloqueExp: Bloque
-  > negacion: "neg" !>> [a-zA-Z0-9] Expresion | negativo: "-" Expresion
-  > right potencia: Expresion "**" Expresion
-  > left ( mult: Expresion "*" Expresion | div: Expresion "/" Expresion | modulo: Expresion "%" Expresion )
-  > left ( suma: Expresion "+" Expresion | resta: Expresion "-" Expresion )
-  > non-assoc ( menor: Expresion "\<" Expresion | mayor: Expresion "\>" Expresion
-              | menorIgual: Expresion "\<=" Expresion | mayorIgual: Expresion "\>=" Expresion
-              | distinto: Expresion "\<\>" Expresion | igual: Expresion "=" Expresion
-              | pertenece: Expresion "in" Expresion )
-  > left conjuncion: Expresion "and" Expresion
-  > left disyuncion: Expresion "or" Expresion
-  > left ( flecha: Expresion "-\>" Expresion | flechaDoble: Expresion "=\>" Expresion )
-  > ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion
-  > ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" Expresion!ifSinElse "else" Expresion
-  > ciclo: "for" !>> [a-zA-Z0-9] "(" VariableIteracion "\<-" Expresion ")" Expresion
+  > negacion: "neg" !>> [a-zA-Z0-9] Operacion | negativo: "-" Operacion
+  > right potencia: Operacion "**" Operacion
+  > left ( mult: Operacion "*" Operacion | div: Operacion "/" Operacion | modulo: Operacion "%" Operacion )
+  > left ( suma: Operacion "+" Operacion | resta: Operacion "-" Operacion )
+  > non-assoc ( menor: Operacion "\<" Operacion | mayor: Operacion "\>" Operacion
+              | menorIgual: Operacion "\<=" Operacion | mayorIgual: Operacion "\>=" Operacion
+              | distinto: Operacion "\<\>" Operacion | igual: Operacion "=" Operacion
+              | pertenece: Operacion "in" Operacion )
+  > left conjuncion: Operacion "and" Operacion
+  > left disyuncion: Operacion "or" Operacion
+  > left ( flecha: Operacion "-\>" Operacion | flechaDoble: Operacion "=\>" Operacion )
   ;
 
 
@@ -146,8 +152,7 @@ syntax Parametro = parametroMetodo: Id ":" Tipo;
 
 
 //Esta es la ultima parte, que es complicada, porque la idea es que no se pierdan los espacios entre strings
-//Como no entendi bien como hacerla, tampoco entendí muy bien como quedó
-// Ni porque funciona xd
+
 
 lexical LiteralString = cadena: "\"" ParteString* "\"";
 

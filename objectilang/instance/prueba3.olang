@@ -2,7 +2,7 @@ object Cat extends Animal
 Cat.talk = method(): Integer { 1 }
 
 method main {
-  print(x, 2);
+  print(x, 2)
   val c = new Cat
   val d = new List[Integer](1, 2, 3)
   val e = new Animal { override talk(): Integer = { 5 } }

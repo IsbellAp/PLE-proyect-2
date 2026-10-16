@@ -11,7 +11,7 @@ import Syntax;
 PathConfig pcfg = getProjectPathConfig(|project://objectilang|);
 
 // Nombre del lenguaje, extension de archivo, modulo y funcion con los servicios.
-Language objectilangLang = language(pcfg, "Objectilang", "obj", "Plugin", "contribs");
+Language objectilangLang = language(pcfg, "Objectilang", ".olang", "Plugin", "contribs");
 
 set[LanguageService] contribs() = {
   parser(start[Programa] (str programa, loc origen) {
