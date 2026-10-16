@@ -116,7 +116,6 @@ syntax LiteralBooleano = verdadero: "true" | falso: "false";
 
 
 
-
 //Definciones basicas (hice primero esto)
 
 syntax DefinicionObjeto = objeto: "object" Id DefinicionGenerico? ConstructorParametros? Herencia?;
