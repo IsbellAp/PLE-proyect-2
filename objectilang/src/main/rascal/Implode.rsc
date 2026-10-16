@@ -25,7 +25,7 @@ void mostrar(loc archivo) {
   println(implodePrograma(parsePrograma(archivo).top));
 }
 
-int main(list[str] args) {
+int main() {
   for (archivo <- ["prueba1", "prueba2", "prueba3", "prueba4", "prueba5"]) {
     mostrar(|project://objectilang/instance/<archivo>.olang|);
 }
