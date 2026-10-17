@@ -1,6 +1,6 @@
 module Syntax
 
-// ===== Espacios y comentarios ===== (No entiendo casi esto, pero ok)
+// ===== Espacios y comentarios ===== 
 layout Layout = EspacioOComentario* !>> [\ \t\n\r] !>> "//";
 
 lexical EspacioOComentario
@@ -119,7 +119,7 @@ syntax LiteralBooleano = verdadero: "true" !>> [a-zA-Z0-9] | falso: "false" !>> 
 
 
 
-//Definciones basicas (hice primero esto)
+//Definciones basicas 
 
 syntax DefinicionObjeto = @category="class" objeto: "object" !>> [a-zA-Z0-9] Id DefinicionGenerico? ConstructorParametros? Herencia?;
 
