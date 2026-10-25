@@ -4,6 +4,7 @@ import ParseTree;
 import IO;
 import Parser;
 import AST;
+import Exception;
 
 Programa implodePrograma(Tree arbol) = implode(#Programa, arbol);
 
@@ -26,13 +27,14 @@ void mostrar(loc archivo) {
 }
 
 int main() {
-  for (archivo <- ["prueba1", "prueba2", "prueba3", "prueba4", "prueba5"]) {
-    mostrar(|project://objectilang/instance/<archivo>.olang|);
+  for (archivo <- ["prueba1", "prueba2", "prueba3", "prueba4", "prueba5", "prueba6"]) {
+    mostrar(|project://objectilang/instance/<archivo>.ol|);
 }
-  prueba(|project://objectilang/instance/prueba1.olang|);
-  prueba(|project://objectilang/instance/prueba2.olang|);
-  prueba(|project://objectilang/instance/prueba3.olang|);
-  prueba(|project://objectilang/instance/prueba4.olang|);
-  prueba(|project://objectilang/instance/prueba5.olang|);
+  prueba(|project://objectilang/instance/prueba1.ol|);
+  prueba(|project://objectilang/instance/prueba2.ol|);
+  prueba(|project://objectilang/instance/prueba3.ol|);
+  prueba(|project://objectilang/instance/prueba4.ol|);
+  prueba(|project://objectilang/instance/prueba5.ol|);
+  prueba(|project://objectilang/instance/prueba6.ol|);
   return 0;
 }

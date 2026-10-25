@@ -19,7 +19,7 @@ keyword Reservada
   = @category="keyword" "object" | @category="keyword" "extends" | @category="keyword" "method" | @category="keyword" "val" | @category="keyword" "var" | @category="keyword" "new"
   | "override" | "if" | "then" | "else" | "for" | "in"
   | "String" | "Integer" | "Boolean" | "true" | "false"
-  | "and" | "or" | "neg"
+  | "and" | "or" | "neg" | "Char"
   ;
 
 //Inicio del programa
@@ -30,7 +30,7 @@ syntax Definicion = defObjeto: DefinicionObjeto | defMetodo: DefinicionObjetoMet
 
 syntax Metodo = @category="method" metodoMain: "method" !>> [a-zA-Z0-9] "main" Bloque;
 
-syntax DefinicionObjetoMetodo = @category="method" metodo: Id "." Id "=" "method" !>> [a-zA-Z0-9] "(" Parametros ")" ":" Tipo Bloque;
+syntax DefinicionObjetoMetodo = @category="method" metodo: Id "." Id "=" "method" !>> [a-zA-Z0-9] "(" Parametros ")" ":" Tipo Bloque?;
 
 
 //Bloque cambió con respecto al original de la primera entrega, ya que así, omitimos ambiguedad.
@@ -113,7 +113,11 @@ syntax CuerpoInstancia = cuerpo: "{" OverrideMetodo+ "}";
 
 syntax OverrideMetodo = sobrescribir: "override" !>> [a-zA-Z0-9] Id "(" Parametros ")" ":" Tipo "=" Bloque;
 
-syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano | litString: LiteralString ;
+syntax Literal = litEntero: Entero | litBooleano: LiteralBooleano | litString: LiteralString | litChar: LiteralChar;
+
+lexical LiteralChar = "\'" CaracterChar "\'";
+
+lexical CaracterChar = ![\'\\\n] | "\\" [\'\\n];
 
 syntax LiteralBooleano = verdadero: "true" !>> [a-zA-Z0-9] | falso: "false" !>> [a-zA-Z0-9];
 
@@ -123,7 +127,7 @@ syntax LiteralBooleano = verdadero: "true" !>> [a-zA-Z0-9] | falso: "false" !>> 
 
 syntax DefinicionObjeto = @category="class" objeto: "object" !>> [a-zA-Z0-9] Id DefinicionGenerico? ConstructorParametros? Herencia?;
 
-syntax Herencia = herencia: "extends" !>> [a-zA-Z0-9] Id;
+syntax Herencia = herencia: "extends" !>> [a-zA-Z0-9] Tipo;
 
 syntax DefinicionGenerico = generico: "[" {ParametroGenerico ","}+ "]";
 
@@ -141,8 +145,10 @@ syntax Tipo
   = tipoString: "String" !>> [a-zA-Z0-9]
   | tipoInteger: "Integer" !>> [a-zA-Z0-9]
   | tipoBoolean: "Boolean" !>> [a-zA-Z0-9]
+  | tipoChar: "Char" !>> [a-zA-Z0-9]
   | tipoNombre: Id nombre
-  | tipoGenerico: Id nombre "[" {Tipo ","}+ argumentos "]";
+  | tipoGenerico: Id nombre "[" {Tipo ","}+ argumentos "]"
+  | tipoTupla: "(" Tipo "," {Tipo ","}+ ")";
 
 
 syntax Parametros = parametros: {Parametro ","}*;

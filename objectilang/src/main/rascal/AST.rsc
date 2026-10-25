@@ -14,7 +14,7 @@ data DefinicionObjeto
   = objeto(str nombre, list[DefinicionGenerico] generico,
            list[ConstructorParametros] constructor, list[Herencia] herencia);
 
-data Herencia = herencia(str padre);
+data Herencia = herencia(Tipo padre);
 data DefinicionGenerico = generico(list[ParametroGenerico] parametros);
 data ParametroGenerico = parametroGenerico(list[Varianza] varianza, str nombre);
 data Varianza = covariante() | contravariante();
@@ -23,7 +23,7 @@ data ConstructorParametros = constructor(list[ParametroConstructor] parametros);
 data ParametroConstructor = parametro(str nombre, Tipo tipo);
 
 data DefinicionObjetoMetodo
-  = metodo(str objeto, str nombre, Parametros parametros, Tipo retorno, Bloque cuerpo);
+  = metodo(str objeto, str nombre, Parametros parametros, Tipo retorno, list[Bloque] cuerpo);
 
 data Parametros = parametros(list[Parametro] lista);
 data Parametro = parametroMetodo(str nombre, Tipo tipo);
@@ -35,6 +35,8 @@ data Tipo
   | tipoBoolean()
   | tipoNombre(str nombre)
   | tipoGenerico(str nombre, list[Tipo] argumentos)
+  | tipoChar()
+  | tipoTupla(Tipo primero, list[Tipo] resto)
   ;
 
 // ===== Bloques y sentencias =====
@@ -118,6 +120,7 @@ data Literal
   = litEntero(int numero)
   | litBooleano(LiteralBooleano booleano)
   | litString(str texto)
+  | litChar(str valor)
   ;
 
 data LiteralBooleano = verdadero() | falso();
