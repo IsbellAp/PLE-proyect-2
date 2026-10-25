@@ -116,11 +116,19 @@ data OverrideMetodo
   = sobrescribir(str nombre, Parametros parametros, Tipo retorno, Bloque cuerpo);
 
 // ===== Literales =====
+
 data Literal
   = litEntero(int numero)
   | litBooleano(LiteralBooleano booleano)
-  | litString(str texto)
+  | litString(str crudo)                  // lo llena implode (texto crudo)
+  | litString(list[ParteString] partes)   // lo deja convertir (Implode.rsc)
   | litChar(str valor)
+  ;
+
+data ParteString
+  = texto(str t)
+  | interpVariable(str nombre)
+  | interpExpresion(Expresion e)
   ;
 
 data LiteralBooleano = verdadero() | falso();
