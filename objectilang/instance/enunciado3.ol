@@ -1,8 +1,8 @@
 // Snippet 3 del enunciado (Proyecto 1): varianza y override dentro de new.
 // Se copia tal cual, incluido "Transform.transform" (el objeto se llama Transformer).
-// Salida esperada (con el interprete):
+// Salida esperada (con el generador de Java):
 //   Preparing specialized food for an animal...
-//   y luego un error en getClass (acceso sin parentesis, seccion 5 de la guia)
+//   Resulting food type: DogFood   (getClass y getSimpleName se generan como metodos de Java)
 object Animal
 object Dog extends Animal
 object Puppy extends Dog

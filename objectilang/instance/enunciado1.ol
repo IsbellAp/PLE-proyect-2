@@ -1,5 +1,5 @@
 // Snippet 1 del enunciado (Proyecto 1): objetos genericos e interpolacion.
-// Salida esperada (con el interprete): Print the line of animal dogs: Dog
+// Salida esperada (con el generador de Java): Print the line of animal dogs: Dog
 object Animal
 object Dog extends Animal
 object Cat extends Animal

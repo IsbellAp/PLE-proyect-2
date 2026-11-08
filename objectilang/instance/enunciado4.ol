@@ -1,6 +1,6 @@
 // Snippet 4 del enunciado (Proyecto 1): if-then-else y for.
 // El snippet son dos lineas sueltas; se agrega un main con a, b y ratings.
-// Salida esperada (con el interprete):
+// Salida esperada (con el generador de Java):
 //   7
 //   Movie: ana, Rating: 5
 //   Movie: bob, Rating: 3
