@@ -1,3 +1,10 @@
 target/
 .vscode/
 *.class
+
+# Java generado por Generador.rsc (se crea al ejecutar)
+objectilang/instance/output/
+
+# Material de apoyo local: enunciados, rubrica, tutorial, guias y notas de cambios
+
+docsContexto/

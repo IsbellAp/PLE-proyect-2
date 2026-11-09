@@ -19,7 +19,7 @@ list[Parte] partesDe(str crudo) {
       res += [<"texto", desescapar("<t>"), t>];
     case t:appl(prod(label("interpVariable", _), _, _), args):
       res += [<"variable", "<args[1]>", t>];
-    case t:appl(prod(label("interpExpresion", _), _, _), args):
+    case appl(prod(label("interpExpresion", _), _, _), args):
       res += [<"expresion", "", args[2]>];
   }
   return res;
