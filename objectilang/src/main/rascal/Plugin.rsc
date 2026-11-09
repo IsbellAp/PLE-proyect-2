@@ -26,10 +26,11 @@ set[LanguageService] contribs() = {
   execution(exec)
 };
 
-// Genera el .java en instance/output, lo ejecuta, muestra la salida en la consola y abre el archivo.
+// Genera el .java en instance/output, lo ejecuta y abre el .java y la salida del programa.
 value exec(generarJava(loc archivo)) {
   ejecutar(archivo);
-  edit(carpetaSalida + "<nombreClase(archivo)>.java");
+  edit(rutaJava(archivo));
+  edit(rutaSalida(archivo));
   return ("result": true);
 }
 

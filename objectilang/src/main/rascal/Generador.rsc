@@ -41,19 +41,26 @@ loc generator1(loc archivo) {
   str rVal = generar(ast, clase, archivo.file);
   println(rVal);
   if (!exists(carpetaSalida)) mkDirectory(carpetaSalida);
-  loc salida = carpetaSalida + "<clase>.java";
+  loc salida = rutaJava(archivo);
   writeFile(salida, rVal);
   return salida;
 }
 
 // Genera el Java, lo ejecuta con java y muestra la salida del programa en la consola.
+// La salida también queda en instance/output/OL_<archivo>.salida.txt (el plugin abre ese archivo).
 str ejecutar(loc archivo) {
   loc salida = generator1(archivo);
   str resultado = correrJava(salida);
   println("===== Salida de <archivo.file> =====");
   println(resultado);
+  writeFile(rutaSalida(archivo), resultado);
   return resultado;
 }
+
+// Archivos que se generan para un .ol. Son funciones (públicas) para que Plugin.rsc las use;
+// las variables globales de un módulo son privadas en Rascal.
+loc rutaJava(loc archivo) = carpetaSalida + "<nombreClase(archivo)>.java";
+loc rutaSalida(loc archivo) = carpetaSalida + "<nombreClase(archivo)>.salida.txt";
 
 void main() {
   for (n <- ["ejec01_aritmetica", "ejec02_condicional", "ejec03_metodos", "ejec04_herencia",
