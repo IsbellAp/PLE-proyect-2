@@ -32,14 +32,14 @@ loc carpetaSalida = |project://objectilang/instance/output|;
 
 // ===== Punto de entrada (Listing 6) =====
 
-// Parsea, implota y genera el Java. Imprime el código y lo escribe en instance/output.
+// Parsea, implota y genera el Java, y lo escribe en instance/output (como el Listing 6, pero sin
+// imprimir el código: en la consola solo se muestra la salida del programa).
 // Devuelve la ubicación del archivo .java generado.
 loc generator1(loc archivo) {
   cast = parsePrograma(archivo);
   ast = implodePrograma(cast.top);
   str clase = nombreClase(archivo);
   str rVal = generar(ast, clase, archivo.file);
-  println(rVal);
   if (!exists(carpetaSalida)) mkDirectory(carpetaSalida);
   loc salida = rutaJava(archivo);
   writeFile(salida, rVal);
@@ -51,8 +51,7 @@ loc generator1(loc archivo) {
 str ejecutar(loc archivo) {
   loc salida = generator1(archivo);
   str resultado = correrJava(salida);
-  println("===== Salida de <archivo.file> =====");
-  println(resultado);
+  print(resultado);
   writeFile(rutaSalida(archivo), resultado);
   return resultado;
 }
@@ -67,6 +66,7 @@ void main() {
              "ejec05_campos", "ejec06_override", "ejec07_tuplas_for",
              "enunciado1", "enunciado2", "enunciado3", "enunciado4", "cadenas",
              "errorEjec_operador", "errorEjec_sinCuerpo", "errorEjec_variable"]) {
+    println("===== <n>.ol =====");
     ejecutar(|project://objectilang/instance/<n>.ol|);
   }
 }
