@@ -6,8 +6,5 @@ target/
 objectilang/instance/output/
 
 # Material de apoyo local: enunciados, rubrica, tutorial, guias y notas de cambios
-ple_project_*.pdf
-rubricaProject3.pdf
-rascal_tutorial.pdf
-Guía de la Persona 1*.md
-Cambios_Proyecto3_*.md
+
+docsContexto/
