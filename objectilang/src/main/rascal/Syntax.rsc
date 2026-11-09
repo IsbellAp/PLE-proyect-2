@@ -1,16 +1,5 @@
 module Syntax
 
-// ===== Resaltado de sintaxis =====
-// Como en el tutorial (Listing 1), el resaltado se define con @category sobre las producciones.
-// El tokenizador de VS Code le da a cada literal la categoría de la producción más cercana que
-// tenga una, y un nombre (Id) o un número conservan siempre su propia categoría. Por eso:
-//   - cada producción que tiene palabras reservadas lleva @category="keyword",
-//   - cada operación lleva @category="operator",
-//   - cada tipo básico lleva @category="type",
-//   - las producciones que solo tienen puntuación ( ) { } [ ] , : . llevan "uncategorized",
-//     para que la puntuación no tome el color de la producción de afuera.
-// Así no se agregan no terminales nuevos y el AST y el implode quedan iguales.
-
 // ===== Espacios y comentarios =====
 layout Layout = EspacioOComentario* !>> [\ \t\n\r] !>> "//";
 
@@ -26,8 +15,10 @@ lexical Id = @category="variable" ([a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9]) \ Reser
 lexical Entero = @category="number" [0-9]+ !>> [0-9];
 
 
-// Reservada solo impide que un Id sea una palabra reservada; el color de cada palabra
-// lo pone la producción donde se usa.
+/*
+Reservada solo impide que un Id sea una palabra reservada; el color de cada palabra
+lo pone la producción donde se usa.
+*/
 keyword Reservada
   = "object" | "extends" | "method" | "val" | "var" | "new"
   | "override" | "if" | "then" | "else" | "for" | "in"
@@ -68,13 +59,16 @@ syntax AnotacionTipo = @category="uncategorized" anotacion: ":" Tipo;
 
 syntax VariableIteracion = varSimple: Id | @category="uncategorized" varTupla: "(" Id "," {Id ","}+ ")";
 
-//Para la expresion lo que hacemos es esta vez usar una funcion de rascal que nos permite poner "prioridad"
-//Esta preioridad si va como de lo mas basico a lo mas completo, por lo que esta vez empezamos desde primario, hasta el que era el tope en nuestro original. 
+/*
+Para la expresion lo que hacemos es esta vez usar una funcion de rascal que nos permite poner "prioridad"
+Esta preioridad si va como de lo mas basico a lo mas completo, por lo que esta vez empezamos desde primario, hasta el que era el tope en nuestro original.
+*/
 
 
-// Nivel 1: if, for y operaciones. Los if/for no pueden ser operandos de un
-// operador sin paréntesis; así se evita la ambigüedad con los operadores.
-// El () !>> "else" hace que el else siempre pertenezca al if más cercano.
+/*
+Nivel 1: if, for y operaciones. Los if/for no pueden ser operandos de un
+operador sin paréntesis; así se evita la ambigüedad con los operadores.
+El () !>> "else" hace que el else siempre pertenezca al if más cercano.*/
 syntax Expresion
   = @category="keyword" ifSinElse: "if" !>> [a-zA-Z0-9] Expresion "then" !>> [a-zA-Z0-9] Expresion () !>> "else"
   | @category="keyword" ifConElse: "if" !>> [a-zA-Z0-9] Expresion "then" !>> [a-zA-Z0-9] Expresion "else" !>> [a-zA-Z0-9] Expresion
