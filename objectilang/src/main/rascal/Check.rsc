@@ -1,6 +1,6 @@
 module Check
 extend analysis::typepal::TypePal;
-extend analysis::typepal::TypePalConfig;
+
 
 
 import AST;
@@ -40,7 +40,7 @@ AType aTipo(tipoString())  = strType();
 AType aTipo(tipoChar())    = charType();
 AType aTipo(tipoNombre(str n)) = objectType(n, []);
 AType aTipo(tipoGenerico(str n, list[Tipo] as)) = objectType(n, [ aTipo(a) | a <- as ]);
-ATypAType aTipo(tipoTupla(Tipo p, list[Tipo] resto)) = tupleType([aTipo(p)] + [ aTipo(r) | r <- resto ]);e aTipo(tipoTupla(list[Tipo] ts)) = tupleType([ aTipo(t) | t <- ts ]);
+AType aTipo(tipoTupla(Tipo p, list[Tipo] resto)) = tupleType([aTipo(p)] + [ aTipo(r) | r <- resto ]);
 
 
 
@@ -51,25 +51,30 @@ ATypAType aTipo(tipoTupla(Tipo p, list[Tipo] resto)) = tupleType([aTipo(p)] + [ 
 
 //Ahora, definimos lo explicado anteriormente: 
 
-//Definimos objeto: 
-void collect(o:objeto(str n, list[DefinicionGenerico] gs, list[ConstructorParametros] cs, list[Herencia] hs), Collector c) {
-  c.define(n, objectId(), o, defType(objectType(n, [])));
-  c.enterScope(o);
+//Definimos objeto:
+
+void collect(DefinicionObjeto obj, Collector c) {
+  if (objeto(str n, list[DefinicionGenerico] gs, list[ConstructorParametros] cs, list[Herencia] hs) := obj) {
+    c.define(n, objectId(), obj, defType(objectType(n, [])));
+    c.enterScope(obj);
     collect(gs, c);
     collect(cs, c);
     collect(hs, c);
-  c.leaveScope(o);
+    c.leaveScope(obj);
+  }
 }
 
 //Definimos Herencia
-void collect(h:herencia(Tipo padre), Collector c) {
-  usarTipo(padre, c);
+void collect(Herencia h, Collector c) {
+  if (herencia(Tipo padre) := h) {
+    usarTipo(padre, c);
+  }
 }
 
 //Definimos Generico
 void collect(generico(list[ParametroGenerico] ps), Collector c) { collect(ps, c); }
 void collect(pg:parametroGenerico(_, str nombre), Collector c) {
-  c.define(nombre, typeParamId(), pg, defType(typeParamType(nombre)));
+  c.define(nombre, typeParamId(), pg, defType(typeParam(nombre)));
 }
 
 
@@ -101,6 +106,17 @@ void collect(d:declaracion(_, str nombre, _, Expresion valor), Collector c) {
   c.define(nombre, variableId(), d, defType(valor));
   collect(valor, c);
 }
-void collect(v:variable(str nombre), Collector c) {
-  c.use(v, {variableId(), fieldId()});
+
+void collect(ElementoBase e, Collector c) {
+  if (variable(str nombre) := e) {
+    c.use(e, {variableId(), fieldId()});
+  }
 }
+
+//Auxiliar
+void usarTipo(tipoNombre(str n), Collector c) = c.use([Id] n, {objectId(), typeParamId()});
+void usarTipo(tipoGenerico(str n, list[Tipo] as), Collector c) {
+  c.use([Id] n, {objectId()});
+  for (a <- as) usarTipo(a, c);
+}
+default void usarTipo(Tipo _, Collector c) { }
