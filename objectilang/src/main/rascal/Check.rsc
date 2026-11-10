@@ -8,7 +8,9 @@ import Syntax;
 import Parser;
 import ParseTree;
 
-// ===== Tipos que entiende el chequeador =====
+// Idioma de tiposss
+//Es la lista de todos los tipos que el lenguaje entiende, pero, en el idioma de TypePal.
+//Es como un "diccionario de tipos" para el TypePal
 data AType
   = objectType(str nombre)
   | anyType()
@@ -18,6 +20,10 @@ data AType
   | charType()
   ;
 
+
+//Traduce para los mensajes de error. Sin esto,
+//los mensajes de error pueden decir tipo:
+//el valor es intType(), cuando queriamos decir "Integer"
 str pretty(intType())  = "Integer";
 str pretty(boolType()) = "Boolean";
 str pretty(strType())  = "String";
@@ -25,17 +31,25 @@ str pretty(charType()) = "Char";
 str pretty(objectType(str n)) = n;
 default str pretty(AType _) = "?";
 
-// ===== Roles =====
+// Cada nombre que registramos es un objeto o una variable
+//Esto nos sirve para cuando buscamos un nombre, comomo un objeto llamado tal
+//Evita confundir con variables
 data IdRole
   = objectId()
   | variableId()
   ;
 
-// ===== Nombres especiales del programa (se llenan antes de chequear) =====
+// Nombres especiales
+//Estos sirven para guardar los nombres genericos y de los campos/parametros
+//No son ni objetos ni variables normales, pero aparecene n el codigo.
+//La idea es que este apoye el punto 6, para que no de falsos errores en los archivos genericos. 
+
 set[str] genericos = {};        // A, B, ... de los object[+A]
 set[str] camposYParams = {};    // campos (val item: T) y parametros de metodos
 
-// ===== Convertir una anotacion de Tipo a AType =====
+// Convertimos una anotacion a tipo
+//Convierte un escrito en el programa en un Atype, sirve para poder compararlo
+//Esto nos ayuda a cumplir parte del punto 5
 AType aTipo((Tipo) `Integer`)   = intType();
 AType aTipo((Tipo) `Boolean`)   = boolType();
 AType aTipo((Tipo) `String`)    = strType();
@@ -43,7 +57,10 @@ AType aTipo((Tipo) `Char`)      = charType();
 AType aTipo((Tipo) `<Id name>`) = objectType("<name>");
 default AType aTipo(Tipo _) = anyType();
 
-// ===== Tipo de un valor (casos simples: literales) =====
+// Calcular el tipo de un valor
+//Mira un valor que va despues del = y dice que tipo es
+//Esto cumple la otra parte del punto 5, y es saber el tipo real del valor.
+
 AType tipoDeExpresion(Expresion e) {
   if (/LiteralBooleano _ := e) return boolType();
   if (/LiteralString  _ := e) return strType();
@@ -52,7 +69,8 @@ AType tipoDeExpresion(Expresion e) {
   return anyType();
 }
 
-// ===== OBJETOS =====
+// Es para que "anotemos" que existe un objeto llamado tal
+//Esto es como la base del punto 6, para verificar que algo exista primero hay que registrar que sí existe (el define)
 void collect(current: (DefinicionObjeto) `object <Id name> <DefinicionGenerico? gs> <ConstructorParametros? cps> <Herencia? hs>`, Collector c) {
   c.define("<name>", objectId(), name, defType(objectType("<name>")));
   collect(gs, cps, hs, c);
@@ -60,13 +78,14 @@ void collect(current: (DefinicionObjeto) `object <Id name> <DefinicionGenerico? 
 void collect(current: (Herencia) `extends <Tipo t>`, Collector c) {
   collect(t, c);
 }
-// USE: un tipo con nombre se busca como objeto... salvo que sea un generico (A, B)
+// Buscamos que eso exista, si no existe, error. Esto es lo del punto 6
 void collect(current: (Tipo) `<Id name>`, Collector c) {
   if ("<name>" notin genericos)
     c.use(name, {objectId()});
 }
 
-// ===== VARIABLES =====
+// Variables
+//Registra la variable, y compara el tipo kdeclarado con el tipo del valor. SI no existe, error.
 void collect(current: (DeclaracionVariable) `<Modificador m> <Id name> : <Tipo t> = <Expresion e>`, Collector c) {
   c.define("<name>", variableId(), name, defType(aTipo(t)));
   collect(t, e, c);
@@ -88,7 +107,9 @@ void collect(current: (ElementoBase) `<Id name>`, Collector c) {
     c.use(name, {variableId()});
 }
 
-// ===== Punto de entrada =====
+//Punto de entrada
+//La funcion que arranca todo
+//Parsea el archivo, recolecta los nombres, y finalmente puede ejecutar para producir resultado
 TModel revisarArchivo(loc archivo) {
   start[Programa] pt = parsePrograma(archivo);
   genericos = {};
@@ -101,7 +122,8 @@ TModel revisarArchivo(loc archivo) {
   return collectAndSolve(pt);
 }
 
-// Imprime solo los errores de un archivo (limpio, sin el TModel gigante)
+// Imprime solo los errores de un archivo
+//Así podemos ver si el checker funciona jiji. 
 void errores(loc archivo) {
   TModel m = revisarArchivo(archivo);
   list[Message] errs = [ msg | msg <- m.messages, msg is error ];
