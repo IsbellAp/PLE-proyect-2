@@ -1,3 +1,4 @@
+// errores: 3 (el enunciado escribe Transform.transform y el objeto se llama Transformer)
 // Snippet 3 del enunciado (Proyecto 1): varianza y override dentro de new.
 // Se copia tal cual, incluido "Transform.transform" (el objeto se llama Transformer).
 // Salida esperada (con el generador de Java):

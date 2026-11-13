@@ -1,3 +1,4 @@
+// errores: 1 (el operador -> no tiene semantica)
 // Error de ejecucion: operadores sin semantica definida (->, => e in).
 // Salida esperada: mensaje claro "operador sin semantica definida: ->".
 method main {

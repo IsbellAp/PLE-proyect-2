@@ -1,3 +1,4 @@
+// errores: 0 (el error es de ejecucion: el metodo no tiene cuerpo)
 // Error de ejecucion: metodo declarado sin cuerpo y llamado sin override.
 // Salida esperada: mensaje claro "el metodo transform no tiene cuerpo".
 object Transformer
