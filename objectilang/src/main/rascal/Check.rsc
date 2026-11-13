@@ -55,6 +55,7 @@ AType aTipo((Tipo) `Boolean`)   = boolType();
 AType aTipo((Tipo) `String`)    = strType();
 AType aTipo((Tipo) `Char`)      = charType();
 AType aTipo((Tipo) `<Id name>`) = objectType("<name>");
+AType aTipo((Tipo) `<Id name>[<{Tipo ","}+ _>]`) = objectType("<name>");
 default AType aTipo(Tipo _) = anyType();
 
 // Calcular el tipo de un valor
@@ -62,11 +63,15 @@ default AType aTipo(Tipo _) = anyType();
 //Esto cumple la otra parte del punto 5, y es saber el tipo real del valor.
 
 AType tipoDeExpresion(Expresion e) {
-  if (/LiteralBooleano _ := e) return boolType();
-  if (/LiteralString  _ := e) return strType();
-  if (/LiteralChar    _ := e) return charType();
-  if (/Entero         _ := e) return intType();
-  return anyType();
+  AType res = anyType();
+  top-down-break visit (e) {
+    case (NuevaInstancia)`new <Tipo t> <Argumentos? _> <CuerpoInstancia? _>`: res = aTipo(t);
+    case LiteralBooleano _: res = boolType();
+    case LiteralString  _: res = strType();
+    case LiteralChar    _: res = charType();
+    case Entero         _: res = intType();
+  }
+  return res;
 }
 
 // Es para que "anotemos" que existe un objeto llamado tal
